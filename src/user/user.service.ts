@@ -4,23 +4,24 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { User, UserDoc } from './user.schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { Profile, ProfileDoc } from 'src/profile/profile.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDoc>,
+    @InjectModel(Profile.name) private readonly profileModel: Model<ProfileDoc>,
   ) {}
 
   async create(dto: CreateUserDto) {
     const email = dto.email.trim().toLowerCase();
     const name = dto.name?.trim();
 
-    // Soft pre-check (nice UX, but still handle race with E11000 below)
     if (await this.userModel.exists({ email })) {
       throw new ConflictException('Email already exists');
     }
@@ -30,7 +31,21 @@ export class UserService {
     try {
       const doc = await this.userModel.create({ email, name, passwordHash });
 
-      // Read back as lean to ensure passwordHash never leaks
+      await this.profileModel.create({
+        userId: doc._id,
+        displayName: name || email.split('@')[0],
+        age: dto.age,
+        interests: dto.interests,
+        areaKey: dto.areaKey,
+        discoverable: true,
+        prefs: {
+          minAge: 18,
+          maxAge: 99,
+          allowedAreas: [],
+          maxDistanceTier: 'near',
+        },
+      });
+
       const created = await this.userModel.findById(doc._id).lean();
 
       return {
@@ -41,7 +56,6 @@ export class UserService {
         updatedAt: created!.updatedAt,
       };
     } catch (err: any) {
-      // Handle unique index race condition
       if (
         err?.code === 11000 &&
         (err?.keyPattern?.email || err?.keyValue?.email)
@@ -81,6 +95,11 @@ export class UserService {
   async remove(id: string) {
     const res = await this.userModel.findByIdAndDelete(id).lean();
     if (!res) throw new NotFoundException('User not found');
+
+    await this.profileModel
+      .deleteOne({ userId: new Types.ObjectId(id) })
+      .exec();
+
     return { deleted: true };
   }
 }
