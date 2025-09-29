@@ -65,12 +65,12 @@
 // );
 // InterestSchema.index({ key: 1 }, { unique: true });
 
-// // --- SWIPES (like/nope history) ---
+// // --- SWIPES (like/dislike history) ---
 // export const SwipeSchema = new Schema(
 //   {
 //     fromUserId: { type: Types.ObjectId, ref: 'User', required: true },
 //     toUserId: { type: Types.ObjectId, ref: 'User', required: true },
-//     action: { type: String, enum: ['like', 'nope', 'superlike'], required: true },
+//     action: { type: String, enum: ['like', 'dislike', 'superlike'], required: true },
 //   },
 //   { timestamps: true }
 // );
