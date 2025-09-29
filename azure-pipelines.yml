@@ -34,7 +34,7 @@ steps:
   displayName: 'Publish test results'
 
 # 6. Publish code coverage (Cobertura)
-- task: PublishCodeCoverageResults@1
+- task: PublishCodeCoverageResults@2
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: 'coverage/cobertura-coverage.xml'
