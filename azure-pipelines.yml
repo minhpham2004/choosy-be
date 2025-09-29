@@ -5,22 +5,27 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+# 1. Install Node.js
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
   displayName: 'Install Node.js'
 
+# 2. Install dependencies
 - script: npm ci
   displayName: 'Install dependencies'
 
+# 3. Build NestJS app
 - script: npm run build
   displayName: 'Build NestJS app'
 
+# 4. Run Jest tests with coverage
 - script: |
     npm install --save-dev jest-junit
-    npx jest --ci --reporters=default --reporters=jest-junit
-  displayName: 'Run unit tests with JUnit report'
+    npx jest --ci --coverage --reporters=default --reporters=jest-junit
+  displayName: 'Run unit tests with coverage + JUnit report'
 
+# 5. Publish test results
 - task: PublishTestResults@2
   inputs:
     testResultsFiles: '**/junit.xml'
@@ -28,6 +33,16 @@ steps:
   condition: succeededOrFailed()
   displayName: 'Publish test results'
 
+# 6. Publish code coverage (Cobertura)
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: 'coverage/cobertura-coverage.xml'
+    reportDirectory: 'coverage'
+  condition: succeededOrFailed()
+  displayName: 'Publish code coverage'
+
+# 7. Publish build artifacts 
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: 'dist'
