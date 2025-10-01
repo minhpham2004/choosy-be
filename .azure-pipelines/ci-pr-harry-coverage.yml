@@ -1,0 +1,49 @@
+# .azure-pipelines/ci-pr.yml
+trigger: none  # PR only
+pr:
+  branches:
+    include:
+      - '*'      # or 'main' if you only want PRs targeting main
+  paths:
+    include:
+      - 'choosy-be/**'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
+
+  - script: npm ci
+    workingDirectory: choosy-be
+    displayName: 'Install dependencies'
+
+  - script: npm run build
+    workingDirectory: choosy-be
+    displayName: 'Build NestJS app'
+
+  - script: |
+      npm install --no-fund --no-audit --save-dev jest-junit
+      npx jest --ci --coverage --reporters=default --reporters=jest-junit
+    env:
+      JEST_JUNIT_OUTPUT: junit.xml
+    workingDirectory: choosy-be
+    displayName: 'Run unit tests with coverage + JUnit report'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: 'choosy-be/junit.xml'
+      testResultsFormat: 'JUnit'
+    condition: succeededOrFailed()
+    displayName: 'Publish test results'
+
+  - task: PublishCodeCoverageResults@2
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: 'choosy-be/coverage/cobertura-coverage.xml'
+      reportDirectory: 'choosy-be/coverage'
+    condition: succeededOrFailed()
+    displayName: 'Publish code coverage'
