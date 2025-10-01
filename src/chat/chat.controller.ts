@@ -51,10 +51,10 @@ export class ChatController {
       body,
     });
 
-    // (nice to have) nudge match's lastMessageAt for sorting — optional:
+    //sorting
     await this.matchModel.updateOne(
       { _id: new Types.ObjectId(matchId) },
-      { $set: { lastMessageAt: saved.createdAt } }
+      { $currentDate: { lastMessageAt: true } }
     );
 
     return { ok: true, message: saved.toObject() };
