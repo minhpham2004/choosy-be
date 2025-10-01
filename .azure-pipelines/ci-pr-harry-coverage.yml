@@ -30,7 +30,6 @@ steps:
       npx jest --ci --coverage --reporters=default --reporters=jest-junit
     env:
       JEST_JUNIT_OUTPUT: junit.xml
-    workingDirectory: choosy-be
     displayName: 'Run unit tests with coverage + JUnit report'
 
   - task: PublishTestResults@2
