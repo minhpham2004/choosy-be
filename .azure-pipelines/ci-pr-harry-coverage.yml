@@ -1,29 +1,24 @@
-# ASD/choosy-be/.azure-pipelines/ci-pr-harry-coverage.yml
+# PR CI for the Nest backend at repo root
 trigger: none
 pr:
   branches:
     include: ['*']
   paths:
     include:
-      - 'ASD/choosy-be/**'   # run only when backend changes
+      - '**'                # run on any change (or narrow later)
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  PROJECT_DIR: 'ASD/choosy-be'
+  PROJECT_DIR: '.'          # <-- repo root, not ASD/choosy-be
 
 steps:
   - checkout: self
 
-  # Debug: prove where we are and that package.json exists
   - script: |
       echo "Repo root: $(Build.SourcesDirectory)"
       ls -la
-      echo "---- ASD ----"
-      ls -la ASD || true
-      echo "---- ASD/choosy-be ----"
-      ls -la ASD/choosy-be || true
     displayName: 'List files (debug)'
 
   - task: NodeTool@0
