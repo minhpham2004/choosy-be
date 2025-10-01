@@ -15,7 +15,7 @@ export class Match {
   @Prop({ type: Date })
   lastMessageAt?: Date;
 
-  @Prop({ type: String, required: true, unique: true })
+  @Prop({ type: String, required: true })
   pairKey: string; // `${min(userA)}_${max(userB)}`
 }
 

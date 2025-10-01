@@ -1,0 +1,65 @@
+# PR CI for the Nest backend at repo root
+trigger: none
+pr:
+  branches:
+    include: ['*']
+  paths:
+    include:
+      - '**'                # run on any change (or narrow later)
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  PROJECT_DIR: '.'          # <-- repo root, not ASD/choosy-be
+
+steps:
+  - checkout: self
+
+  - script: |
+      echo "Repo root: $(Build.SourcesDirectory)"
+      ls -la
+    displayName: 'List files (debug)'
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js 18'
+
+  - script: npm ci
+    workingDirectory: '$(PROJECT_DIR)'
+    displayName: 'Install dependencies'
+
+  - script: npm run build
+    workingDirectory: '$(PROJECT_DIR)'
+    displayName: 'Build NestJS app'
+
+  - script: |
+      npm install --no-fund --no-audit --save-dev jest-junit
+      npx jest --ci --coverage --reporters=default --reporters=jest-junit
+    env:
+      JEST_JUNIT_OUTPUT: junit.xml
+    workingDirectory: '$(PROJECT_DIR)'
+    displayName: 'Run unit tests with coverage + JUnit report'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '$(PROJECT_DIR)/junit.xml'
+      testResultsFormat: 'JUnit'
+    condition: succeededOrFailed()
+    displayName: 'Publish test results'
+
+  - task: PublishCodeCoverageResults@2
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(PROJECT_DIR)/coverage/cobertura-coverage.xml'
+      reportDirectory: '$(PROJECT_DIR)/coverage'
+    condition: succeededOrFailed()
+    displayName: 'Publish code coverage'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(PROJECT_DIR)/dist'
+      ArtifactName: 'nestjs-app'
+      publishLocation: 'Container'
+    displayName: 'Publish build artifact'
