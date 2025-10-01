@@ -43,8 +43,8 @@ steps:
 
   - task: NodeTool@0
     inputs:
-      versionSpec: '$(NODE_VERSION)'
-    displayName: 'Install Node.js $(NODE_VERSION)'
+      versionSpec: '20.x'
+    displayName: 'Install Node.js 20'
 
   - script: npm ci
     workingDirectory: '$(PROJECT_DIR)'
