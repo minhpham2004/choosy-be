@@ -1,28 +1,42 @@
-# .azure-pipelines/ci-pr-harry-coverage.yml
-trigger: none  # PR only
+# ASD/choosy-be/.azure-pipelines/ci-pr-harry-coverage.yml
+trigger: none
 pr:
   branches:
-    include:
-      - '*'      # or 'main' if you only want PRs targeting main
+    include: ['*']
   paths:
     include:
-      - 'choosy-be/**'
+      - 'ASD/choosy-be/**'   # run only when backend changes
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
+
+variables:
+  PROJECT_DIR: 'ASD/choosy-be'
 
 steps:
+  - checkout: self
+
+  # Debug: prove where we are and that package.json exists
+  - script: |
+      echo "Repo root: $(Build.SourcesDirectory)"
+      ls -la
+      echo "---- ASD ----"
+      ls -la ASD || true
+      echo "---- ASD/choosy-be ----"
+      ls -la ASD/choosy-be || true
+    displayName: 'List files (debug)'
+
   - task: NodeTool@0
     inputs:
       versionSpec: '18.x'
-    displayName: 'Install Node.js'
+    displayName: 'Install Node.js 18'
 
   - script: npm ci
-    workingDirectory: choosy-be
+    workingDirectory: '$(PROJECT_DIR)'
     displayName: 'Install dependencies'
 
   - script: npm run build
-    workingDirectory: choosy-be
+    workingDirectory: '$(PROJECT_DIR)'
     displayName: 'Build NestJS app'
 
   - script: |
@@ -30,11 +44,12 @@ steps:
       npx jest --ci --coverage --reporters=default --reporters=jest-junit
     env:
       JEST_JUNIT_OUTPUT: junit.xml
+    workingDirectory: '$(PROJECT_DIR)'
     displayName: 'Run unit tests with coverage + JUnit report'
 
   - task: PublishTestResults@2
     inputs:
-      testResultsFiles: 'choosy-be/junit.xml'
+      testResultsFiles: '$(PROJECT_DIR)/junit.xml'
       testResultsFormat: 'JUnit'
     condition: succeededOrFailed()
     displayName: 'Publish test results'
@@ -42,7 +57,14 @@ steps:
   - task: PublishCodeCoverageResults@2
     inputs:
       codeCoverageTool: 'Cobertura'
-      summaryFileLocation: 'choosy-be/coverage/cobertura-coverage.xml'
-      reportDirectory: 'choosy-be/coverage'
+      summaryFileLocation: '$(PROJECT_DIR)/coverage/cobertura-coverage.xml'
+      reportDirectory: '$(PROJECT_DIR)/coverage'
     condition: succeededOrFailed()
     displayName: 'Publish code coverage'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(PROJECT_DIR)/dist'
+      ArtifactName: 'nestjs-app'
+      publishLocation: 'Container'
+    displayName: 'Publish build artifact'
