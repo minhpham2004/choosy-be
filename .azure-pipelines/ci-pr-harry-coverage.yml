@@ -1,30 +1,50 @@
-# PR CI for the Nest backend at repo root
+# PR CI for Nest backend at repo root
 trigger: none
 pr:
   branches:
     include: ['*']
   paths:
     include:
-      - '**'                # run on any change (or narrow later)
+      - '**'
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  PROJECT_DIR: '.'          # <-- repo root, not ASD/choosy-be
+  PROJECT_DIR: '.'             # repo root
+  NODE_VERSION: '18.x'
+  # Safe test env so unit tests never try real services:
+  NODE_ENV: 'test'
+  JWT_SECRET: 'dev-secret'
+  MONGODB_URI: 'mongodb://localhost:27017/DO_NOT_CONNECT_IN_UNIT_TESTS'
+  DB_NAME: 'choosy_test'
+  PORT: '0'                   # unused in unit tests
+  # jest-junit output path
+  JEST_JUNIT_OUTPUT: 'junit.xml'
 
 steps:
   - checkout: self
+    fetchDepth: 1
 
+  # Debug: show root files
   - script: |
       echo "Repo root: $(Build.SourcesDirectory)"
       ls -la
     displayName: 'List files (debug)'
 
+  # Cache node_modules by lockfile hash (speed up)
+  - task: Cache@2
+    inputs:
+      key: 'npm | "$(Agent.OS)" | **/package-lock.json'
+      restoreKeys: |
+        npm | "$(Agent.OS)"
+      path: '$(PROJECT_DIR)/node_modules'
+    displayName: 'Cache node_modules'
+
   - task: NodeTool@0
     inputs:
-      versionSpec: '18.x'
-    displayName: 'Install Node.js 18'
+      versionSpec: '$(NODE_VERSION)'
+    displayName: 'Install Node.js $(NODE_VERSION)'
 
   - script: npm ci
     workingDirectory: '$(PROJECT_DIR)'
@@ -34,18 +54,24 @@ steps:
     workingDirectory: '$(PROJECT_DIR)'
     displayName: 'Build NestJS app'
 
+  # Run unit tests with JUnit + coverage (Cobertura will be in coverage/)
   - script: |
-      npm install --no-fund --no-audit --save-dev jest-junit
       npx jest --ci --coverage --reporters=default --reporters=jest-junit
     env:
-      JEST_JUNIT_OUTPUT: junit.xml
+      NODE_ENV: $(NODE_ENV)
+      JWT_SECRET: $(JWT_SECRET)
+      MONGODB_URI: $(MONGODB_URI)
+      DB_NAME: $(DB_NAME)
+      PORT: $(PORT)
+      JEST_JUNIT_OUTPUT: $(JEST_JUNIT_OUTPUT)
     workingDirectory: '$(PROJECT_DIR)'
-    displayName: 'Run unit tests with coverage + JUnit report'
+    displayName: 'Run unit tests (JUnit + coverage)'
 
   - task: PublishTestResults@2
     inputs:
-      testResultsFiles: '$(PROJECT_DIR)/junit.xml'
+      testResultsFiles: '$(PROJECT_DIR)/$(JEST_JUNIT_OUTPUT)'
       testResultsFormat: 'JUnit'
+      failTaskOnFailedTests: true
     condition: succeededOrFailed()
     displayName: 'Publish test results'
 
