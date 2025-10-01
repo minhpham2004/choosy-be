@@ -9,8 +9,8 @@ $ErrorActionPreference = 'Stop'
 
 # ---- Config ----
 $BASE = "http://localhost:8080"
-$HARRY_EMAIL = "harry8@example.com"
-$ELISE_EMAIL = "elise8@example.com"
+$HARRY_EMAIL = "harry9@example.com"
+$ELISE_EMAIL = "elise9@example.com"
 $PASSWORD = "password1"       # per your ask
 
 # ---- Helpers ----

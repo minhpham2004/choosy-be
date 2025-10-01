@@ -58,7 +58,7 @@ steps:
   - script: |
       npx jest --ci --coverage --reporters=default --reporters=jest-junit
     env:
-      NODE_ENV: $(NODE_ENV)
+      NODE_ENV: test
       JWT_SECRET: $(JWT_SECRET)
       MONGODB_URI: $(MONGODB_URI)
       DB_NAME: $(DB_NAME)
