@@ -49,3 +49,23 @@ steps:
     ArtifactName: 'nestjs-app'
     publishLocation: 'Container'
   displayName: 'Publish build artifact'
+
+# 8. Copy dist files to Lightsail
+- task: CopyFilesOverSSH@0
+  inputs:
+    sshEndpoint: 'lightsail-ssh'
+    sourceFolder: 'dist'
+    contents: '**'
+    targetFolder: '/home/bitnami/choosy-be/dist'
+  displayName: 'Copy dist files to Lightsail'
+
+# 9. Restart app on Lightsail
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'lightsail-ssh'
+    runOptions: 'commands'
+    commands: |
+      cd /home/bitnami/choosy-be
+      npm install --omit=dev
+      pm2 restart choosy-be || pm2 start npm --name "choosy-be" -- start
+  displayName: 'Restart app via PM2'
