@@ -66,6 +66,5 @@ steps:
     runOptions: 'commands'
     commands: |
       cd /home/bitnami/choosy-be
-      npm install --omit=dev
-      pm2 restart choosy-be || pm2 start npm --name "choosy-be" -- start
+      pm2 restart choosy-be || pm2 start "node dist/main.js" --name "choosy-be"
   displayName: 'Restart app via PM2'
