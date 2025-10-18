@@ -8,7 +8,7 @@ steps:
 # 1. Install Node.js
 - task: NodeTool@0
   inputs:
-    versionSpec: '18.x'
+    versionSpec: '20.x'
   displayName: 'Install Node.js'
 
 # 2. Install dependencies
@@ -42,9 +42,14 @@ steps:
   condition: succeededOrFailed()
   displayName: 'Publish code coverage'
 
-# 7. Install production dependencies only
-- script: npm ci --production
-  displayName: 'Install production dependencies'
+# 7. Clean up dev dependencies and test files
+- script: |
+    rm -rf node_modules
+    rm -rf coverage
+    rm -rf test
+    rm -rf src  # Remove source files, we only need dist
+    npm ci --omit=dev  # Install only production dependencies
+  displayName: 'Prepare production files'
 
 # 8. Archive application files
 - task: ArchiveFiles@2
@@ -71,4 +76,5 @@ steps:
     appType: 'webAppLinux'                            
     appName: 'api-choosy'                
     package: '$(Build.ArtifactStagingDirectory)/app.zip'
+    runtimeStack: 'NODE|20-lts'
   displayName: 'Deploy to Azure App Service'
