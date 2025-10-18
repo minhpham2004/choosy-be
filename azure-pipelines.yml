@@ -74,7 +74,8 @@ steps:
   inputs:
     azureSubscription: 'choosy-api-connection' 
     appType: 'webAppLinux'                            
-    appName: 'api-choosy'                
+    appName: 'api-choosy'
     package: '$(Build.ArtifactStagingDirectory)/app.zip'
     runtimeStack: 'NODE|20-lts'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
   displayName: 'Deploy to Azure App Service'
