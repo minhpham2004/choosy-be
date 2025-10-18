@@ -56,5 +56,5 @@ steps:
     azureSubscription: 'choosy-api-connection' 
     appType: 'webAppLinux'                            
     appName: 'api-choosy'                
-    package: '$(System.DefaultWorkingDirectory)/dist' 
+    package: '$(System.DefaultWorkingDirectory)' 
   displayName: 'Deploy to Azure App Service'
