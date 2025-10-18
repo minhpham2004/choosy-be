@@ -50,21 +50,11 @@ steps:
     publishLocation: 'Container'
   displayName: 'Publish build artifact'
 
-# # 8. Copy dist files to Lightsail
-# - task: CopyFilesOverSSH@0
-#   inputs:
-#     sshEndpoint: 'lightsail-ssh'
-#     sourceFolder: 'dist'
-#     contents: '**'
-#     targetFolder: '/home/bitnami/choosy-be/dist'
-#   displayName: 'Copy dist files to Lightsail'
-
-# # 9. Restart app on Lightsail
-# - task: SSH@0
-#   inputs:
-#     sshEndpoint: 'lightsail-ssh'
-#     runOptions: 'commands'
-#     commands: |
-#       cd /home/bitnami/choosy-be
-#       pm2 restart choosy-be || pm2 start "node dist/main.js" --name "choosy-be"
-#   displayName: 'Restart app via PM2'
+# 8. Deploy to Azure App Service
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'choosy-api-connection' 
+    appType: 'webAppLinux'                            
+    appName: 'api-choosy'                
+    package: '$(System.DefaultWorkingDirectory)/dist' 
+  displayName: 'Deploy to Azure App Service'
