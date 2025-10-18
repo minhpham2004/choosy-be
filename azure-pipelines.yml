@@ -42,19 +42,33 @@ steps:
   condition: succeededOrFailed()
   displayName: 'Publish code coverage'
 
-# 7. Publish build artifacts 
+# 7. Install production dependencies only
+- script: npm ci --production
+  displayName: 'Install production dependencies'
+
+# 8. Archive application files
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+    replaceExistingArchive: true
+  displayName: 'Archive application files'
+
+# 9. Publish build artifacts 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'dist'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/app.zip'
     ArtifactName: 'nestjs-app'
     publishLocation: 'Container'
   displayName: 'Publish build artifact'
 
-# 8. Deploy to Azure App Service
+# 10. Deploy to Azure App Service
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'choosy-api-connection' 
     appType: 'webAppLinux'                            
     appName: 'api-choosy'                
-    package: '$(System.DefaultWorkingDirectory)' 
+    package: '$(Build.ArtifactStagingDirectory)/app.zip'
   displayName: 'Deploy to Azure App Service'
