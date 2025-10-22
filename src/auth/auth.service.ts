@@ -1,4 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+// src/auth/auth.service.ts
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from 'src/user/user.service';
@@ -15,7 +16,6 @@ export class AuthService {
   ) {}
 
   async validateUserByEmail(email: string, password: string) {
-    // explicitly include passwordHash for comparison
     const user = await this.userModel
       .findOne({ email: email.toLowerCase().trim() })
       .select('+passwordHash')
@@ -26,7 +26,6 @@ export class AuthService {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) throw new UnauthorizedException('Invalid credentials');
 
-    // strip hash before returning
     const { passwordHash, ...safe } = user as any;
     return safe;
   }
@@ -37,4 +36,28 @@ export class AuthService {
     const accessToken = await this.jwtService.signAsync(payload);
     return { user, accessToken };
   }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await this.userModel.findById(userId).select('+passwordHash');
+    if (!user) throw new NotFoundException('User not found');
+
+    const ok = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!ok) throw new UnauthorizedException('Invalid current password');
+
+    const salt = await bcrypt.genSalt(10);
+    user.passwordHash = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    return { ok: true };
+  }
+
+   async reauth(userId: string, password: string) {
+    const user = await this.userModel.findById(userId).select('+passwordHash');
+    if (!user) throw new NotFoundException('User not found');
+
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) throw new UnauthorizedException('Invalid password');
+
+    return { ok: true };
+   }
 }

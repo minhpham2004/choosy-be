@@ -1,64 +1,88 @@
+// src/user/user.controller.ts
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Patch,
-    Post,
-    Query,
-    UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
+import { GetUserInfo } from 'src/auth/user.decorator';
 
 @Controller('user')
 export class UserController {
-    constructor(private readonly usersService: UserService) { }
+  constructor(private readonly usersService: UserService) {}
 
-    @Post()
-    create(@Body() dto: CreateUserDto) {
-        return this.usersService.create(dto);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async me(@GetUserInfo() user: { userId: string }) {
+    return this.usersService.findOne(user.userId);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Get()
-    findAll() {
-        return this.usersService.findAll();
-    }
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async updateMe(
+    @GetUserInfo() user: { userId: string },
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.usersService.update(user.userId, dto);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('search')
-    search(@Query('query') query: string) {
-        return this.usersService.searchUsers(query);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Delete('me')
+  async deleteMe(@GetUserInfo() user: { userId: string }) {
+    return this.usersService.remove(user.userId);
+  }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.usersService.findOne(id);
-    }
+  // --- Existing routes
+  @Post()
+  create(@Body() dto: CreateUserDto) {
+    return this.usersService.create(dto);
+  }
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-        return this.usersService.update(id, dto);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
 
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.usersService.remove(id);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Get('search')
+  search(@Query('query') query: string) {
+    return this.usersService.searchUsers(query);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('ban/:id')
-    ban(@Param('id') id: string) {
-        return this.usersService.updateStatus(id, 'banned');
-    }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('unban/:id')
-    unban(@Param('id') id: string) {
-        return this.usersService.updateStatus(id, 'active');
-    }
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.usersService.update(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('ban/:id')
+  ban(@Param('id') id: string) {
+    return this.usersService.updateStatus(id, 'banned');
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('unban/:id')
+  unban(@Param('id') id: string) {
+    return this.usersService.updateStatus(id, 'active');
+  }
 }
