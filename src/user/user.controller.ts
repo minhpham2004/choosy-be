@@ -1,12 +1,13 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -15,31 +16,49 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly usersService: UserService) {}
+    constructor(private readonly usersService: UserService) { }
 
-  @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
-  }
+    @Post()
+    create(@Body() dto: CreateUserDto) {
+        return this.usersService.create(dto);
+    }
 
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    findAll() {
+        return this.usersService.findAll();
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
+    @UseGuards(JwtAuthGuard)
+    @Get('search')
+    search(@Query('query') query: string) {
+        return this.usersService.searchUsers(query);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.usersService.update(id, dto);
-  }
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.usersService.findOne(id);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
-  }
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+        return this.usersService.update(id, dto);
+    }
+
+    @Delete(':id')
+    remove(@Param('id') id: string) {
+        return this.usersService.remove(id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('ban/:id')
+    ban(@Param('id') id: string) {
+        return this.usersService.updateStatus(id, 'banned');
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('unban/:id')
+    unban(@Param('id') id: string) {
+        return this.usersService.updateStatus(id, 'active');
+    }
 }
