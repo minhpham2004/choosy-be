@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { MatchModule } from './match/match.module';
 import { ChatModule } from './chat/chat.module';
+import { BlockModule } from './block/block.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -23,7 +25,9 @@ import { ChatModule } from './chat/chat.module';
     AuthModule,
     ProfileModule,
     MatchModule,
-    ChatModule //
+    ChatModule,
+    BlockModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
