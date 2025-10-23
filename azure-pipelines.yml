@@ -8,7 +8,7 @@ steps:
 # 1. Install Node.js
 - task: NodeTool@0
   inputs:
-    versionSpec: '18.x'
+    versionSpec: '20.x'
   displayName: 'Install Node.js'
 
 # 2. Install dependencies
@@ -42,10 +42,40 @@ steps:
   condition: succeededOrFailed()
   displayName: 'Publish code coverage'
 
-# 7. Publish build artifacts 
+# 7. Clean up dev dependencies and test files
+- script: |
+    rm -rf node_modules
+    rm -rf coverage
+    rm -rf test
+    rm -rf src  # Remove source files, we only need dist
+    npm ci --omit=dev  # Install only production dependencies
+  displayName: 'Prepare production files'
+
+# 8. Archive application files
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+    replaceExistingArchive: true
+  displayName: 'Archive application files'
+
+# 9. Publish build artifacts 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'dist'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/app.zip'
     ArtifactName: 'nestjs-app'
     publishLocation: 'Container'
   displayName: 'Publish build artifact'
+
+# 10. Deploy to Azure App Service
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'choosy-api-connection' 
+    appType: 'webAppLinux'                            
+    appName: 'api-choosy'
+    package: '$(Build.ArtifactStagingDirectory)/app.zip'
+    runtimeStack: 'NODE|20-lts'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  displayName: 'Deploy to Azure App Service'
