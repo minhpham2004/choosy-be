@@ -1,3 +1,5 @@
+//Harry
+
 import {
   Body, Controller, Get, Param, Post, Query, UseGuards,
   DefaultValuePipe, ParseIntPipe, HttpException, HttpStatus
@@ -37,10 +39,10 @@ export class ChatController {
     }
 
     const m = await this.matchModel.findById(matchId).lean();
-    if (!m) return []; // or 404 if you prefer
+    if (!m) return [];
 
     const isMember = [String(m.userA), String(m.userB)].includes(String(userId));
-    if (!isMember) return []; // or 403 if you prefer
+    if (!isMember) return [];
 
     const lim = Math.max(1, Math.min(200, Number(limit)));
     return this.msgModel

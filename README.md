@@ -1,3 +1,5 @@
+
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
@@ -22,14 +24,23 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Description For Tutor
+<p>
+Feature Breakdown <br>
+  Harry   - Databasem, Chat/Messaging <br>
+  Minh    - Database, Image Hosting, Matching,  <br>
+  Anthony - Safety Features, Admin <br>
+  Nathan  - Account Creation, Swipe/Swipedeck, Account Management <br>
+  Rayan   - Profile Creation, Profile <br>
+</p>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Project setup for tutor
 
 ```bash
 $ npm install
+$ npm i #installs local dependencies
+$ npm run start #for backend repo
+$ npm run dev #for frontend repo
 ```
 
 ## Compile and run the project
