@@ -1,3 +1,4 @@
+// Minh Pham
 import { IsString, IsEnum } from 'class-validator';
 
 export class SwipeDto {

@@ -1,3 +1,4 @@
+// Minh Pham, Nathan Ravasini
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const GetUserInfo = createParamDecorator(

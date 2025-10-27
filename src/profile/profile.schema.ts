@@ -1,4 +1,4 @@
-//Minh and Harry
+// Minh Pham & Harry Solterbeck
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';

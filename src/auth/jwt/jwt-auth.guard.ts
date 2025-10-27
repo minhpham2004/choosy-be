@@ -1,3 +1,4 @@
+// Minh Pham, Nathan Ravasini
 import { Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
