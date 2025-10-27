@@ -1,4 +1,4 @@
-// src/auth/auth.controller.ts
+// Minh Pham, Nathan Ravasini
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator';
 import { AuthService } from './auth.service';

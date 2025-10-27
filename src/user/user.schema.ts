@@ -1,4 +1,4 @@
-//Harry, Minh, Anthony
+// Minh Pham, Harry Solterbeck and Anthony Alexis
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';

@@ -1,5 +1,4 @@
-//Harry
-
+// Harry Solterbeck
 import {
   Body, Controller, Get, Param, Post, Query, UseGuards,
   DefaultValuePipe, ParseIntPipe, HttpException, HttpStatus

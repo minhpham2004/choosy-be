@@ -1,4 +1,4 @@
-// src/auth/auth.service.ts
+// Minh Pham, Nathan Ravasini
 import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';

@@ -1,110 +1,109 @@
+Choosy Backend API
+
+Choosy is a NestJS-based backend that powers the Choosy hobby-matching platform. It provides secure RESTful APIs for user management, matching, chat, reporting, and moderation.
+
+Project Structure
+
+The backend follows a modular architecture, with each feature encapsulated in its own folder containing its controller, service, schema, and DTOs.
+
+src/
+│
+├── main.ts                   # Application entry point
+├── app.module.ts              # Root application module
+│
+├── auth/                      # Authentication & authorization (JWT)
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── auth.dto.ts
+│   └── auth.schema.ts
+│
+├── user/                      # User registration & account details
+│   ├── user.controller.ts
+│   ├── user.service.ts
+│   ├── user.dto.ts
+│   └── user.schema.ts
+│
+├── profile/                   # Profile info
+│   ├── profile.controller.ts
+│   ├── profile.service.ts
+│   ├── profile.dto.ts
+│   └── profile.schema.ts
+│
+├── match/                     # Matching logic & mutual like detection
+│   ├── match.controller.ts
+│   ├── match.service.ts
+│   ├── match.dto.ts
+│   └── match.schema.ts
+│
+├── chat/                      # Messaging between users
+│   ├── chat.controller.ts
+│   ├── chat.service.ts
+│   ├── chat.dto.ts
+│   └── chat.schema.ts
+│
+├── block/                     # User block and safety management
+│   ├── block.controller.ts
+│   ├── block.service.ts
+│   ├── block.dto.ts
+│   └── block.schema.ts
+│
+└── report/                    # Report features
+    ├── report.controller.ts
+    ├── report.service.ts
+    ├── report.dto.ts
+    └── report.schema.ts
 
 
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Each module exposes its own routes and communicates via dependency injection within the NestJS ecosystem.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Team Responsibilities
+Member	Responsibilities
+- Harry:	Chat and messaging system
+- Minh:	Matching logic and image hosting integration
+- Anthony:	Safety, reporting, and admin-related features
+- Nathan:	Authentication, account creation
+- Rayan:	User profiles and profile management
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Technologies and Frameworks
+- Framework: NestJS (Node.js 20 LTS)
+- Language: TypeScript
+- Database: MongoDB (hosted on MongoDB Atlas)
+- Authentication: JWT (JSON Web Token)
+- Image Hosting: Cloudinary API (for profile photos)
+- Testing: Jest (unit and e2e testing)
+- Deployment: Azure App Service via Azure DevOps pipelines
 
-## Description For Tutor
-<p>
-Feature Breakdown <br>
-  Harry   - Databasem, Chat/Messaging <br>
-  Minh    - Database, Image Hosting, Matching,  <br>
-  Anthony - Safety Features, Admin <br>
-  Nathan  - Account Creation, Swipe/Swipedeck, Account Management <br>
-  Rayan   - Profile Creation, Profile <br>
-</p>
 
-## Project setup for tutor
+Environment Configuration
+Create a .env file in the backend root directory:
+PORT=8080
+MONGODB_URI=mongodb+srv://ngocminhpham:CV4onnHfEDfBPCjG@choosy.tnoiskn.mongodb.net/?retryWrites=true&w=majority&appName=choosy
+DB_NAME=choosy
+JWT_SECRET=dev-secret
 
-```bash
-$ npm install
-$ npm i #installs local dependencies
-$ npm run start #for backend repo
-$ npm run dev #for frontend repo
-```
 
-## Compile and run the project
+Steps to Run the Project
+1. Install Dependencies
+npm install
 
-```bash
-# development
-$ npm run start
+2. Start the Application
+# Development mode
+npm run start:dev
 
-# watch mode
-$ npm run start:dev
+# Production mode
+npm run start:prod
 
-# production mode
-$ npm run start:prod
-```
 
-## Run tests
+The API runs by default at:
+http://localhost:8080
 
-```bash
-# unit tests
-$ npm run test
+3. Run Tests
+npm run test
+npm run test:e2e
+npm run test:cov
 
-# e2e tests
-$ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Notes for Tutor
+- This repository contains backend code only (NestJS API)
+- Frontend is deployed separately under the choosy App Service
+- All environment variables and credentials are managed securely in Azure DevOps variable groups
