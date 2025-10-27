@@ -106,4 +106,3 @@ npm run test:cov
 Notes for Tutor
 - This repository contains backend code only (NestJS API)
 - Frontend is deployed separately under the choosy App Service
-- All environment variables and credentials are managed securely in Azure DevOps variable groups
