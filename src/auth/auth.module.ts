@@ -10,9 +10,9 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 @Module({
   imports: [
     UserModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
+    PassportModule.register({ defaultStrategy: 'jwt' }), // Enables JWT-based auth via Passport
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'dev-secret',
+      secret: process.env.JWT_SECRET || 'dev-secret', // JWT signing secret
       signOptions: { expiresIn: '1d' },
     }),
   ],

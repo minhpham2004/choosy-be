@@ -19,6 +19,7 @@ export class UserService {
         @InjectModel(Profile.name) private readonly profileModel: Model<ProfileDoc>,
     ) { }
 
+     // Create a new user and associated profile
     async create(dto: CreateUserDto) {
         const email = dto.email.trim().toLowerCase();
         const name = dto.name?.trim();
@@ -31,6 +32,7 @@ export class UserService {
 
         const doc = await this.userModel.create({ email, name, passwordHash });
 
+        // Auto-create profile for the new user
         await this.profileModel.create({
             userId: doc._id,
             displayName: name || email.split('@')[0],
@@ -67,6 +69,7 @@ export class UserService {
         return doc;
     }
 
+    // Update user info, ensuring email uniqueness
     async update(id: string, dto: UpdateUserDto) {
         if (dto.email) {
             const emailOwner = await this.userModel.findOne({ email: dto.email }).lean();
@@ -87,6 +90,7 @@ export class UserService {
         return { deleted: true };
     }
 
+    // Search by name, email, or user ID
     async searchUsers(query: string) {
         if (!query || !query.trim()) return [];
 
@@ -113,6 +117,7 @@ export class UserService {
         }));
     }
 
+     // Toggle user status between active/banned
     async updateStatus(id: string, status: 'active' | 'banned') {
         const updated = await this.userModel.findByIdAndUpdate(id, { status }, { new: true }).lean();
         if (!updated) throw new NotFoundException('User not found');
